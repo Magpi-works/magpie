@@ -424,3 +424,35 @@ Decision:
 - Open **AGENT-16-T05**: Magpie Execute invokes the existing `/coach` handler after
   pre-coach todos complete; remaining-steps MUST omit the coach-role todo.
 - Do not treat this as QUAL/PERF accept. Do not start AGENT-16-T04 for this gap.
+
+## 2026-09-14 — Cheap-fetch harvest on JS trust portals (`goal_mtz1c1ar001`)
+
+Identity:
+
+- Goal: `goal_mtz1c1ar001`
+- Task: ~100 developer SaaS API matrix (trial, CC, API key, SSO, SOC2, pricing,
+  usage-based). Parent/Grok Bot Magpie session. Local copy:
+  `/Users/ith/Downloads/goal_mtz1c1ar001`
+- Models: operate ~GLM flash (~$0.03–0.05); reviewer/coder children DeepSeek flash.
+
+Observation:
+
+- Scout verified dense `/pricing` pages (Resend). Strategy (markdown
+  `strategy-saas-api-survey.md`, then v2) scaled **fetch/peek HTML** (~2 fetches
+  beyond pricing, unknown-and-move-on). Harvest used **coder curl scripts**, not
+  Magpie `observe` on painted pages.
+- Coach path was a **reviewer subagent** over that markdown, not host `/coach`
+  JSON (`coach-checkpoint`). Same bypass class as `goal_mtumeewm001`.
+- Matrix of 30 rows delivered. SPA/JS trust portals (Algolia, Anthropic, Datadog,
+  …) stayed unknown/thin. “Verify on the product” was often page text, not signup.
+- Operator review: flash was right for breadth; quality gap is coach optimizing
+  cost/throughput instead of escalate-to-browser on shells/unknown required fields.
+  Grok 4.6 would not fix fetch-blind SPAs.
+
+Decision:
+
+- **COACH-20**: strategy must preserve qualification quality; cheapest route is
+  D44 peek (not curl). Empty JS shell / unknown required field → `observe`.
+  Harvest Execute hint forbids coder-fetch as the loop.
+- Do not treat this as R1.E2 or E-QUAL. Host `/coach` bypass remains T05/T06 live
+  debt on parent sessions.

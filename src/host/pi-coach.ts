@@ -50,6 +50,12 @@ const COACH_INSTRUCTIONS =
   "doNot may name wasted routes already in this digest; do not forbid untested pools. " +
   "If yield counts are zero, say so and demand recording — do not lock a pool. " +
   "This turn uses a stronger thinking class; it is restored after the artifact.\n\n" +
+  "Efficiency is waste-reduction (a repeatable loop, peek instead of losing the list), " +
+  "not a cheaper-than-browser substitute. If the digest shows empty SPA shells, " +
+  "fetch-only HTML, or required fields left unknown, put an escalate-to-observe " +
+  "(live Chrome) exception in the artifact. Harvest still uses Magpie peek/observe; " +
+  "coder curl is not the loop when the spec says verify on the product. " +
+  "Do not scale “mark unknown and move on” for fields the goal required checking.\n\n" +
   "Trajectory digest (not the session transcript):\n";
 
 export interface CoachCheckpointData {
@@ -256,7 +262,9 @@ export function bindCoach(pi: ExtensionAPI, options: CoachBindOptions): CoachHan
       "\nThis STRATEGY is a trial loop. Try it until it is falsified. Record candidate_accepted, " +
       "candidate_rejected, or candidate_duplicate after every candidate. Clicks that return ok are not " +
       "progress. If the named route is falsified, stop — do not invent a second plan. Magpie will run " +
-      "/coach again. Do not treat Do-not as covering lists the scout never tried.\n";
+      "/coach again. Do not treat Do-not as covering lists the scout never tried. " +
+      "Do not replace peek/observe with curl or a coder fetch script as the harvest loop. " +
+      "If a page is a JS shell or a required field stays unknown, observe it.\n";
     const swap = latest.replacedPrevious
       ? "\nA new guideline replaces the previous one. Finish the current entity before switching loops.\n"
       : trial;

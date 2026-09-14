@@ -252,6 +252,8 @@ Spec: [`docs/coach.md`](coach.md) · tickets: AGENT-16-T01..T03, T05, T06
 - [x] **R1.5** Magpie closed-loop coach — AGENT-16-T06
       (`work-items/evaluations/agent-16-t06-closed-loop-coach.md`)
       2026-09-10: FakePi. Live harvest following the loop is still R1.E2.
+      2026-09-14: COACH-20 prompt after `goal_mtz1c1ar001` (fetch vs JS portals).
+      Not E2.
 
 T01 and T02 may proceed in parallel. T03 depends on both. T05 depends on T03.
 T06 depends on T05. Do not run E2 until T06 FakePi is green.
@@ -538,7 +540,5 @@ sessions (Track B), already listed above.
 | 2026-09-12 | R6.1 / R6.2 / R6.E1 ticked (PARENT-01-T01, T02). Magpie `--json` session
       handle + L0 plan admission. RESEARCH-09 canary noted under R6.0. R6.E2 /
       skills / cost profiles / R6 exit still open; do not claim R6 shipped. |
-| 2026-09-13 | R6.E2 green (PARENT-01-T03, ≈USD 0.004 flash). R6.3 skills + R6.4 profiles
-      ticked. R6.0 citation pass (01–08 not all live-verified). Exit checklist
-      items for handle/admission/E2/D37/skills ticked; R6.E3 Bot live + Magpie→Grok
-      auth still open. Do not claim R6 as a marketed ship without E3 notes. |
+| 2026-09-14 | COACH-20: `goal_mtz1c1ar001` cheap-fetch vs JS portals. Coach
+      prompt + harvest hint escalate shells/unknown fields to observe. Not R1.E2. |

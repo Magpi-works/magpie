@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { buildTaskCard } from "../../src/runtime/card.ts";
 import {
+  STRATEGY_JSON_EXAMPLE,
   STRATEGY_RENDER_MAX_CHARS,
   STRATEGY_STEP_ITEMS,
   assertStrategyArtifact,
   parseStrategyArtifact,
+  parseJsonValue,
   renderStrategyArtifact,
   StrategyArtifactError,
   strategyFromFacts,
@@ -34,6 +36,14 @@ const GUIDELINE = {
 };
 
 describe("AGENT-16-T02 strategy artifact", () => {
+  it("schema example escalates JS shells instead of teaching cheapest-fetch", () => {
+    const artifact = assertStrategyArtifact(parseJsonValue(STRATEGY_JSON_EXAMPLE));
+    assert.match(artifact.summary, /painted page|wandering/i);
+    assert.match(artifact.exceptions.join(" "), /JS shell|observe/i);
+    assert.match(artifact.doNot.join(" "), /curl|coder fetch/i);
+    assert.match(artifact.qualify.join(" "), /unknown required fields are not done/i);
+  });
+
   it("accepts a venue → tagged → peek guideline", () => {
     const artifact = assertStrategyArtifact(GUIDELINE);
     assert.equal(artifact.schemaVersion, 1);

@@ -35,13 +35,16 @@ export const STRATEGY_REQUIRED_HINT =
 
 export const STRATEGY_JSON_EXAMPLE = JSON.stringify({
   schemaVersion: 1,
-  summary: "Acquire via the cheapest verified route; peek instead of leaving the list.",
-  loop: ["Stay on the source list", "Peek each candidate", "Qualify on the live page"],
-  qualify: ["Apply the goal criteria; do not loosen them"],
-  exceptions: [],
+  summary:
+    "Peek the live list; escalate empty JS shells to observe. Cheap means no wandering, not skipping the painted page.",
+  loop: ["Stay on the source list", "Peek each candidate on the live page", "Qualify from what the page shows"],
+  qualify: ["Apply the goal criteria; do not loosen them; unknown required fields are not done"],
+  exceptions: [
+    "If a cheap HTML read is a JS shell or a required field stays unknown, observe the rendered page",
+  ],
   record: ["candidate_accepted or candidate_rejected after each peek"],
   stop: ["After enough accepts, or when the source list stops yielding"],
-  doNot: ["Navigate away and Back; you lose the list"],
+  doNot: ["Navigate away and Back; you lose the list", "Scale curl/coder fetch when the goal needs the painted page"],
   confidence: "medium",
   falsify: "The named route has no candidates on the next two sources",
   assumptions: [],

@@ -84,7 +84,7 @@ Restrictions:
 Ask with ask_user when a personal fact is missing. Do not invent defaults.
 
 Classify the objective before you write the plan:
-- calibration_required: many similar entities, fuzzy qualification, unknown acquisition loop. You MUST NOT author a long harvest. You MUST author scout (tight budget) → coach → harvest blocked on the coach artifact. You MUST NOT invent a list of site tactics to exhaust before coaching. Coach is a guideline generator, not a second planner. Numbered steps MUST be recognizable as scout, then coach, then harvest.
+- calibration_required: many similar entities, fuzzy qualification, unknown acquisition loop. You MUST NOT author a long harvest. You MUST author scout (tight budget) → coach → harvest blocked on the coach artifact. You MUST NOT invent a list of site tactics to exhaust before coaching. Coach is a guideline generator, not a second planner. Numbered steps MUST be recognizable as scout, then coach, then harvest. The coach guideline must preserve qualification quality (when to peek vs observe), not replace the browser with cheaper fetch.
 - known_flow: a short reversible flow you can already script. No coach step.
 - criteria_unsettled: success, sources, or outreach still undefined. Ask the operator. Do not plan a harvest.
 
@@ -131,7 +131,9 @@ export const HARVEST_EXECUTE_HINT =
   "candidate_accepted, candidate_rejected, or candidate_duplicate after every candidate. " +
   "Clicks that return ok are not progress. If the named route is falsified, stop — do not " +
   "invent a second plan. Magpie will run /coach again. Do not treat Do-not as covering " +
-  "lists the scout never tried.";
+  "lists the scout never tried. Do not replace peek/observe with curl or a coder fetch " +
+  "script as the harvest loop. If a page is a JS shell or a required field stays unknown, " +
+  "observe it.";
 
 /** While scout is waiting for host /coach, planner/coder cannot stand in as a critic. */
 export const AWAITING_COACH_DISABLED_TOOLS = new Set<string>(["subagent", "scratch_write"]);
