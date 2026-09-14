@@ -36,7 +36,7 @@ Four layers, not three:
 | Layer | Who | What |
 | --- | --- | --- |
 | 1. Goal / spec | Operator + planner | What counts as success. Immutable while executing. |
-| 2. **Coach strategy** | Coach (expensive, read-only) | How to acquire and filter candidates efficiently. A guideline, not a program. |
+| 2. **Coach strategy** | Coach (expensive, read-only) | How to acquire and filter without wandering, while still meeting qualification quality. A guideline, not a program. |
 | 3. Page plan | Executor | Bounded actions on the current page (D18). |
 | 4. Harness | Runtime | Execute and verify one action (D17). |
 
@@ -205,7 +205,7 @@ Playwright, and job SQLite MUST NOT be required to unit-test a digest.
 - Owner: `src/runtime/coach/digest.ts`
 - Ticket: AGENT-16-T01
 
-### Strategy artifact (COACH-05 … COACH-08)
+### Strategy artifact (COACH-05 … COACH-08, COACH-20)
 
 **COACH-05.** Coach output SHALL validate against a closed schema before it can block or
 unblock harvest. Unknown keys dropped. Lists and strings hard-capped (same spirit as
@@ -255,6 +255,18 @@ context.
 - Owner: `src/runtime/card.ts` (render helper) + ContextCompiler for jobs
 - Ticket: AGENT-16-T02, AGENT-16-T04
 
+**COACH-20.** Coach SHALL name a repeatable acquisition loop that still meets the spec's
+qualification quality. Efficiency is waste-reduction (peek vs losing the list, D44), not
+substituting Magpie Chrome with curl or a coder fetch script. If scout evidence includes
+empty JS shells, fetch-only HTML, or required fields left unknown, the artifact MUST
+include an `exceptions` branch that escalates those rows to `observe` (rendered page).
+A guideline that scales “mark unknown and move on” for fields the spec required verifying
+on the product is incomplete. Rescue coach SHALL treat a harvest that only produced
+thin/unknown cells on JS-heavy pages as a falsified cheap route, not a finished matrix.
+- Rationale: `goal_mtz1c1ar001` scaled pricing-page fetch; SPA trust portals stayed unknown
+- Owner: `src/host/pi-coach.ts` instructions, `STRATEGY_JSON_EXAMPLE`, harvest Execute hint
+- Ticket: none yet (prompt/schema example change; not a new scheduler)
+
 ### Planner policy (COACH-09 … COACH-11)
 
 **COACH-09.** Plan-mode context SHALL tell the planner:
@@ -264,6 +276,8 @@ context.
 - You MUST author scout (tight budget) → coach → harvest blocked on the coach artifact.
 - You MUST NOT invent a list of site tactics to exhaust before coaching.
 - Coach is a guideline generator, not a second planner.
+- The guideline MUST preserve qualification quality (when to peek vs observe), not
+  replace Magpie Chrome with cheaper fetch.
 
 `/plan` numbered steps for `calibration_required` MUST be recognizable as those three
 roles (scout / coach / harvest), even if the wording differs.
@@ -488,6 +502,8 @@ stop:
 doNot:
   - Navigate to a profile and Back; you lose the tagged list
   - Generic Instagram people-search as the primary seed
+exceptions:
+  - If a peek is an empty JS shell or a required field stays unknown, observe the live page
 falsify:
   - Tagged posts are empty or private on the next two venues
 ```

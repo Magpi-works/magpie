@@ -80,7 +80,9 @@ describe("AGENT-16-T03 interactive /coach", () => {
     assert.match(PLAN_MODE_CONTEXT, /coach/i);
     assert.match(PLAN_MODE_CONTEXT, /harvest/i);
     assert.match(PLAN_MODE_CONTEXT, /MUST NOT invent a list of site tactics/i);
-    assert.match(PLAN_MODE_CONTEXT, /calibration_required/);
+    assert.match(PLAN_MODE_CONTEXT, /qualification quality/i);
+    assert.match(HARVEST_EXECUTE_HINT, /peek\/observe/i);
+    assert.match(HARVEST_EXECUTE_HINT, /coder fetch/i);
   });
 
   it("/coach disables act / save / subagent while the review turn runs", async () => {
@@ -203,6 +205,7 @@ describe("AGENT-16-T03 interactive /coach", () => {
     await pi.startSession();
     await runCommand(pi, COACH_COMMAND, "");
     assert.ok(pi.userMessages.some((text) => text.includes(STRATEGY_JSON_EXAMPLE)));
+    assert.ok(pi.userMessages.some((text) => /escalate-to-observe/i.test(text)));
     const invented =
       "```json\n" +
       JSON.stringify({
