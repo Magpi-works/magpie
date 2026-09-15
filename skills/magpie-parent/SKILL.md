@@ -56,11 +56,14 @@ On hosts that are not Grok Bot, use Magpie’s default session dir
 
 ### 1. Install / verify Magpie (once per machine)
 
-Need **Node ≥ 24**. Magpie **≥ 0.1.5** for `--json` / `profiles` (0.1.4 and earlier
-open the TUI and hang headless).
+Need **Node ≥ 24**. Package **`@naiemk/magpi`**, latest published **`0.1.5`**.
+Need **≥ 0.1.5** for `--json` / `profiles` (0.1.4 and earlier open the TUI and hang
+headless). Binary is `magpie`.
 
 ```bash
-npm install -g @naiemk/magpi
+node -v   # must be v24+
+npm install -g @naiemk/magpi@0.1.5
+# or always latest: npm install -g @naiemk/magpi
 export MAGPIE_SESSION_DIR="${MAGPIE_SESSION_DIR:-/workspace/magpie/sessions}"
 mkdir -p "$MAGPIE_SESSION_DIR"
 magpie --help | head -40
@@ -69,17 +72,48 @@ magpie --help | head -40
 `--json` and `profiles` must appear in help. If they do not, upgrade
 `@naiemk/magpi` and re-check. Do **not** run bare `magpie` (TUI hang).
 
-Harvest follow-ups need a Magpie provider key (`OPENROUTER_API_KEY` or Magpie
-`/login`). `--json` start does not need Chrome. Do not put API keys in this skill.
+### 1b. OpenRouter key + low-cost GLM pins
 
-If this is the first long harvest on the machine:
+Harvest follow-ups need a Magpie provider key. Prefer **`OPENROUTER_API_KEY`** in
+the Magpie process env (or Magpie `/login`). `--json` start does not need Chrome.
+Do **not** put API keys in this skill or in chat.
 
 ```bash
-magpie profiles recommend
+test -n "$OPENROUTER_API_KEY" || {
+  echo "OPENROUTER_API_KEY missing — ask the human; do not harvest in the parent browser."
+  exit 1
+}
 ```
 
+**Recommended cheap stack** (worker cheap, planner/coach stronger, coding not the
+harvest loop):
+
+| Slot | Pin |
+| --- | --- |
+| Worker (`default`) | `openrouter/z-ai/glm-5.3-flash` |
+| Planner (`plan`) | `openrouter/z-ai/glm-5.3` |
+| Coach (`coach`) | `openrouter/z-ai/glm-5.3` |
+| Coding child | Prefer `openrouter/z-ai/glm-5.3` (or stronger) when Magpie spawns `coder` |
+
+```bash
+mkdir -p ~/.browser-agent-core
+cat > ~/.browser-agent-core/models.json <<'EOF'
+{
+  "default": "openrouter/z-ai/glm-5.3-flash",
+  "plan": "openrouter/z-ai/glm-5.3",
+  "coach": "openrouter/z-ai/glm-5.3"
+}
+EOF
+```
+
+Optional named profiles (`magpie profiles recommend` / `apply budget|balanced|grok`)
+exist for older defaults. Prefer the GLM `models.json` above for low-cost harvests.
 Ask the human before `magpie profiles apply …`. Do not auto-apply a paid profile.
 If `profiles` hangs or opens a TUI, the build is too old — upgrade and stop.
+
+Use Magpie for **long-running repetitive** browser work (multi-site qualify, list
+scroll+peek, campaigns). Keep tiny one-URL lookups on the parent. After delegate,
+do **not** browse the same harvest yourself.
 
 ### 2. Reuse a live job if this is a follow-up
 
