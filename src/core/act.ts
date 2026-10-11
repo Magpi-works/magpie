@@ -11,7 +11,8 @@ import { uniqueChooserHit } from "./chooser.ts";
 import { describeCheck, describePredicate, evaluatePredicate, optionalPredicate, verify } from "./predicates.ts";
 import { describeVerification, settleVerification, DEFAULT_SETTLE_MS } from "./settle.ts";
 import type { BrowserPort } from "./browser.ts";
-import type { LedgerSink } from "./ledger.ts";
+import type { LedgerSink, LedgerTarget } from "./ledger.ts";
+import { REDACTION_MASK } from "./redact.ts";
 import { classifyAction, type Classification } from "./reversibility.ts";
 import { urlMatchesIntent } from "./url-intent.ts";
 import {
@@ -167,6 +168,8 @@ export async function act(
     action: {
       kind: request.kind,
       ref: request.ref,
+      target: control ? ledgerTarget(control) : undefined,
+      input: ledgerInput(request, control),
       url: request.url,
       reversibility: classification.reversibility,
       reversibilityReason: classification.reason,
@@ -187,6 +190,26 @@ export async function act(
   });
 
   return result;
+}
+
+function ledgerTarget(control: Control): LedgerTarget {
+  return {
+    role: control.role,
+    name: control.name,
+    tag: control.tag,
+    ...(control.href ? { href: control.href } : {}),
+    ...(control.inputType ? { inputType: control.inputType } : {}),
+  };
+}
+
+function ledgerInput(request: ActionRequest, control: Control | undefined): string | undefined {
+  const input = request.kind === "type"
+    ? request.text
+    : request.kind === "select"
+      ? request.value
+      : undefined;
+  if (input === undefined) return undefined;
+  return control?.inputType === "password" ? REDACTION_MASK : input;
 }
 
 /**

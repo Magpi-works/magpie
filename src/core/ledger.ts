@@ -61,6 +61,15 @@ export interface LedgerEvent {
   action?: {
     kind: string;
     ref?: string;
+    /**
+     * What `ref` pointed at when the action ran.
+     *
+     * Refs are per-session handles, so a trace that keeps only `e12` cannot say what was
+     * clicked once the session is gone, and cannot be turned into a durable locator.
+     */
+    target?: LedgerTarget;
+    /** Text typed or option selected. Password fields are masked. */
+    input?: string;
     url?: string;
     reversibility?: string;
     reversibilityReason?: string;
@@ -72,6 +81,15 @@ export interface LedgerEvent {
   payload?: Record<string, unknown>;
   /** Paths to screenshots and other files. Never inline content. */
   artifacts?: string[];
+}
+
+/** The control as perception saw it. `role` is the snapshot's role, not a computed ARIA role. */
+export interface LedgerTarget {
+  role: string;
+  name: string;
+  tag: string;
+  href?: string;
+  inputType?: string;
 }
 
 export type LedgerInput = Omit<LedgerEvent, "id" | "ts" | "goalId">;
@@ -126,6 +144,15 @@ export class Ledger implements LedgerSink {
       ts: new Date().toISOString(),
       ...input,
       intent: input.intent ? redactDeep(input.intent) : undefined,
+      // Field by field: `authorization` is a sensitive key name, and masking it wholesale
+      // would erase the gate's own verdict.
+      action: input.action
+        ? {
+            ...input.action,
+            target: input.action.target ? redactDeep(input.action.target) : undefined,
+            input: input.action.input !== undefined ? redactDeep(input.action.input) : undefined,
+          }
+        : undefined,
       after: input.after
         ? { ...input.after, changes: input.after.changes.slice(0, 12).map((c) => redactDeep(c)) }
         : undefined,
