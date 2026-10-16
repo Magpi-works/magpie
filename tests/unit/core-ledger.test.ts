@@ -73,6 +73,28 @@ describe("AGENT-00-T02 evidence ledger", () => {
     assert.ok(raw.includes(REDACTION_MASK));
   });
 
+  it("redacts the action target and input but keeps the gate's verdict", async () => {
+    const ledger = await Ledger.open(root, "goal_target");
+    await ledger.append({
+      type: "action",
+      action: {
+        kind: "type",
+        ref: "e7",
+        target: { role: "textbox", name: "API token sk-abcdefghijklmnopqrstuvwxyz012345", tag: "input" },
+        input: "Bearer abcdefghijklmnopqrstuvwxyz",
+        authorization: "none",
+        authorizationReason: "no outbound or destructive match (none)",
+      },
+    });
+
+    const [event] = await ledger.read();
+    assert.equal(event?.action?.target?.role, "textbox");
+    assert.equal(event?.action?.target?.name.includes("sk-abcdefghijklmnopqrstuvwxyz012345"), false);
+    assert.equal(event?.action?.input?.includes("abcdefghijklmnopqrstuvwxyz"), false);
+    assert.equal(event?.action?.authorization, "none");
+    assert.equal(event?.action?.authorizationReason, "no outbound or destructive match (none)");
+  });
+
   it("caps oversized payloads instead of writing them whole", async () => {
     const ledger = await Ledger.open(root, "goal_4");
     await ledger.append({ type: "probe", payload: { blob: "x".repeat(MAX_PAYLOAD_CHARS * 3) } });
