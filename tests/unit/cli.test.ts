@@ -5,7 +5,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { Ledger } from "../../src/core/ledger.ts";
 import { goalPaths } from "../../src/core/paths.ts";
-import { main, parseArgs, parseCriterion } from "../../src/cli/main.ts";
+import { main, parseArgs, parseCriterion, splitFlagList } from "../../src/cli/main.ts";
 import { SMOKE_TASK_IDS, selectTasks } from "../../src/suite/tags.ts";
 import { SUITE_TASKS } from "../../src/suite/tasks.ts";
 
@@ -28,6 +28,26 @@ describe("CLI argument parsing", () => {
       "url_includes:/done",
     ]);
     assert.equal(args.flags.criterion, "text_visible:Thanks,url_includes:/done");
+  });
+
+  it("keeps repeated JSON criteria whole when splitting the list", () => {
+    const args = parseArgs([
+      "run",
+      "goal",
+      "--criterion",
+      '{"kind":"url_includes","text":"/pay"}',
+      "--criterion",
+      "text_visible:Thanks",
+      "--criterion",
+      '{"kind":"all","of":[{"kind":"text_visible","text":"a, b \\"c\\" }"},{"kind":"no_console_error"}]}',
+    ]);
+    const entries = splitFlagList(String(args.flags.criterion));
+    assert.equal(entries.length, 3);
+    assert.deepEqual(entries.map(parseCriterion), [
+      { kind: "url_includes", text: "/pay" },
+      { kind: "text_visible", text: "Thanks" },
+      { kind: "all", of: [{ kind: "text_visible", text: 'a, b "c" }' }, { kind: "no_console_error" }] },
+    ]);
   });
 
   it("treats a trailing flag as a boolean", () => {

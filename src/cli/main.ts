@@ -63,10 +63,37 @@ function flagString(flags: ParsedArgs["flags"], name: string): string | undefine
 }
 
 function flagList(flags: ParsedArgs["flags"], name: string): string[] {
-  return (flagString(flags, name) ?? "")
-    .split(",")
+  return splitFlagList(flagString(flags, name) ?? "")
     .map((entry) => entry.trim())
     .filter(Boolean);
+}
+
+/**
+ * Splits a comma-joined repeated flag, but never inside a JSON value: a JSON criterion
+ * such as `{"kind":"url_includes","text":"/pay"}` contains commas of its own.
+ */
+export function splitFlagList(value: string): string[] {
+  const entries: string[] = [];
+  let depth = 0;
+  let inString = false;
+  let start = 0;
+  for (let index = 0; index < value.length; index++) {
+    const char = value[index];
+    if (inString) {
+      if (char === "\\") index += 1;
+      else if (char === '"') inString = false;
+      continue;
+    }
+    if (char === '"' && depth > 0) inString = true;
+    else if (char === "{" || char === "[") depth += 1;
+    else if ((char === "}" || char === "]") && depth > 0) depth -= 1;
+    else if (char === "," && depth === 0) {
+      entries.push(value.slice(start, index));
+      start = index + 1;
+    }
+  }
+  entries.push(value.slice(start));
+  return entries;
 }
 
 /** `--criterion "text_visible:Thanks"` or raw JSON for the full predicate language. */
