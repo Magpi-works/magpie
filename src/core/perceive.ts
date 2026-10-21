@@ -78,8 +78,23 @@ const COLLECT = `(() => {
   // A label wrapping its control also contains that control's text, so
   // "<label>Location <select><option>Remote</option>…" would otherwise be named
   // "Location Remote NYC". Strip nested controls before reading the label.
+  // The control's own label, as Playwright names it: aria-labelledby, then any associated
+  // <label> (for= or wrapping, via el.labels), then an enclosing <label>.
   const labelTextFor = (el) => {
-    const label = el.closest ? el.closest("label") : null;
+    const ids = el.getAttribute ? el.getAttribute("aria-labelledby") : null;
+    if (ids) {
+      const text = clean(
+        ids
+          .split(/\\s+/)
+          .map((id) => {
+            const node = document.getElementById(id);
+            return node ? node.textContent : "";
+          })
+          .join(" "),
+      );
+      if (text) return text;
+    }
+    const label = (el.labels && el.labels[0]) || (el.closest ? el.closest("label") : null);
     if (!label) return "";
     const copy = label.cloneNode(true);
     for (const nested of copy.querySelectorAll("input, select, textarea, button, option")) {

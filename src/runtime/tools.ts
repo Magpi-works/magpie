@@ -253,6 +253,35 @@ const PredicateSchema = Type.Object({
   of: Type.Optional(Type.Any()),
 });
 
+/**
+ * `type` reads `text` and `select` reads `value`, and models swap them. A swapped field
+ * used to type "" and pass the read-back (an empty want accepts anything), so a form
+ * looked filled while staying empty.
+ */
+/**
+ * On a commit the gate reads `expect` as a precondition (D23), while a model usually
+ * means the outcome. Without saying so, a refused "create" looked like a dead end and
+ * the run gave up with the form filled.
+ */
+export function refusalNote(code: string): string {
+  if (code === "precondition_failed") {
+    return "The action did not happen. This action commits, so expect was checked before acting as a precondition. If expect describes the outcome you want, act again without expect, then use check.";
+  }
+  return "The action did not happen. Fix the precondition or take another route.";
+}
+
+export function fillArgs(request: ActionRequest): ActionRequest | string {
+  if (request.kind === "type" && request.text === undefined) {
+    if (typeof request.value === "string") return { ...request, text: request.value };
+    return 'type needs "text" (use "" to clear a field)';
+  }
+  if (request.kind === "select" && request.value === undefined) {
+    if (typeof request.text === "string") return { ...request, value: request.text };
+    return 'select needs "value"';
+  }
+  return request;
+}
+
 export function buildTools(context: ToolContext): AgentTool[] {
   const view = context.view ?? DEFAULT_VIEW;
   const guard =
@@ -374,12 +403,16 @@ export function buildTools(context: ToolContext): AgentTool[] {
         }),
         ref: Type.Optional(Type.String()),
         url: Type.Optional(Type.String()),
-        text: Type.Optional(Type.String()),
-        value: Type.Optional(Type.String()),
+        text: Type.Optional(Type.String({ description: "type: the text to enter" })),
+        value: Type.Optional(Type.String({ description: "select: the option to choose" })),
         dy: Type.Optional(Type.Number()),
         files: Type.Optional(Type.Array(Type.String())),
         wait: Type.Optional(Type.Object({}, { additionalProperties: true })),
-        expect: Type.Optional(PredicateSchema),
+        expect: Type.Optional({
+          ...PredicateSchema,
+          description:
+            "What should hold after the action. On a commit (create, send, pay, delete) it must already hold before acting instead.",
+        }),
         intent: Type.Optional(Type.String({ description: "Why, in a few words" })),
       }),
       execute: async (_id: string, params: unknown) => {
@@ -393,9 +426,11 @@ export function buildTools(context: ToolContext): AgentTool[] {
               });
             }
           }
+          const args = fillArgs(params as ActionRequest);
+          if (typeof args === "string") return reply({ error: args });
           countStep();
           const expect = optionalPredicate(raw.expect);
-          const request = { ...(params as ActionRequest), tabId: tab(), expect };
+          const request = { ...args, tabId: tab(), expect };
           const outcome = await guardedAct(
             context.browser,
             request,
@@ -436,7 +471,7 @@ export function buildTools(context: ToolContext): AgentTool[] {
               done: false,
               refused: outcome.code,
               why: outcome.reason,
-              note: "The action did not happen. Fix the precondition or take another route.",
+              note: refusalNote(outcome.code),
             });
           }
           const spent = budget();
