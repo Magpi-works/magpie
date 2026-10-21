@@ -28,6 +28,7 @@ const ROUTES: Record<string, string> = {
   "/jobs": "jobs.html",
   "/apply": "apply.html",
   "/dialog": "dialog.html",
+  "/labels": "labels.html",
   "/error": "error.html",
   "/dynamic": "dynamic.html",
   "/jsonlint": "jsonlint.html",
